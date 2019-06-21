@@ -311,8 +311,8 @@ batchPrint:
 		
 		#print to match printing code if needed
 		#if standard print, make sure to have clear color
-		li	$t0, 1		#if pcode == 1
-		beq	$s3, $t0, bPscCend
+		li	$t0, 1		#if pcode != 1
+		bne	$s3, $t0, bPscCend
 		bPsclearColor:
 			li	$t0, -1	#if lastFG != -1 
 			bne	$s6, $t0, bPscCreset
