@@ -311,8 +311,8 @@ batchPrint:
 		
 		#print to match printing code if needed
 		#if standard print, make sure to have clear color
-		li	$t0, 1		#if pcode != 1
-		bne	$s3, $t0, bPscCend
+		li	$t0, 1		#if pcode == 1
+		beq	$s3, $t0, bPscCend
 		bPsclearColor:
 			li	$t0, -1	#if lastFG != -1 
 			bne	$s6, $t0, bPscCreset
@@ -884,11 +884,27 @@ printCircle:
 		addi	$t0, $t0, 12
 		li	$t1, 0xFFFF
 		sh	$t1, 0($t0)
+
+		# Sterilize the input to GLIR_BatchPrint of the guard value
+        # 0xFFFF in print row to avoid not printing the remainder of a
+        # batch if the guard is encountered
+		addi	$t0, $zero, 0		#i = 0
+		addi	$t1, $zero, 8		#loop 8 times
+		la	$t2, pClist
+		pCguardl:
+		lhu	$t3, 0($t2)		#print row
+		li	$t4, 0xFFFF		#guard
+		bne	$t3, $t4, pCsterile
+		sb	$zero, 4($t2)	#set print code 0
+		sb	$zero, 0($t2)	#reset print row
+		pCsterile:
+		addi	$t2, $t2, 12	#increment by 3 words (1 job)
+		addi	$t0, $t0, 1		#i++
+		bne		$t0, $t1, pCguardl
+		
+		pCguarde:
 		la	$a0, pClist
 		jal	batchPrint
-		
-		#li	$a0, 1000
-		#jal	sleep
 		
 		addi	$s1, $s1, 1		#y += 1
 		bgtz	$s2, pClmoveRow	#if(err <= 0)
