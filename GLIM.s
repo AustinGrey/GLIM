@@ -186,28 +186,28 @@ printString:
 	# $t0 - $t3, $t7-$t9 = temp storage of bytes and values
 	########################################################################
 	# Stack Adjustments
-	addi	$sp, $sp, -4		# Adjust the stack to save $fp
-	sw	$fp, 0($sp)		# Save $fp
+	addi	$sp, $sp, -4	# Adjust the stack to save $fp
+	sw	$fp, 0($sp)		    # Save $fp
 	add	$fp, $zero, $sp		# $fp <= $sp
-	addi	$sp, $sp, -8		# Adjust stack to save variables
+	addi	$sp, $sp, -8	# Adjust stack to save variables
 	sw	$ra, -4($fp)		# Save $ra
 	sw	$s0, -8($fp)		# Save $s0
 	
-	
-	#terminal automatically regects negative values, not certain why, but not checking for it either
-	la	$t0, TERM_ROWS	#check if past boundary
+	la	$t0, TERM_ROWS      #check if past boundary
 	lw	$t0, 0($t0)
-	slt	$t0, $t0, $a1	#if TERM_ROWS < print row
+	bge	$a1, $t0, pSend     #if TERM_ROWS <= print row
 	
 	la	$t1, TERM_COLS
 	lw	$t1, 0($t1)
-	slt	$t1, $t1, $a2	#or if TERM_COLS < print col
+	bge	$a2, $t1, pSend     #or if TERM_COLS <= print col
+
+    slt $t2, $a1, $zero     #or if print row < 0
+    slt $t3, $a2, $zero     #or if print col < 0
 	
-	or	$t0, $t0, $t1
-	bne	$t0, $zero, pSend	#do nothing
+	or	$t2, $t2, $t3
+	bne	$t2, $zero, pSend	#then do nothing
 	
-				#else
-	
+	#else	
 	move	$s0, $a0
 	
 	move	$a0, $a1
