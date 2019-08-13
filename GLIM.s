@@ -885,7 +885,7 @@ printCircle:
 		li	$t1, 0xFFFF
 		sh	$t1, 0($t0)
 
-		# Sterilize the input to GLIR_BatchPrint of the guard value
+        # Sterilize the input to GLIR_BatchPrint of the guard value
         # 0xFFFF in print row to avoid not printing the remainder of a
         # batch if the guard is encountered
 		addi	$t0, $zero, 0		#i = 0
@@ -900,7 +900,7 @@ printCircle:
 			pCsterile:
 			addi	$t2, $t2, 12	#increment by 3 words (1 job)
 			addi	$t0, $t0, 1		#i++
-		bne		$t0, $t1, pCguardl
+		bne $t0, $t1, pCguardl
 		
 		pCguarde:
 		la	$a0, pClist
